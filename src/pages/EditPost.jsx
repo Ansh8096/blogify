@@ -1,0 +1,56 @@
+import React, { useEffect, useState } from 'react'
+import { Container, PostForm} from '../components/index'
+import appWriteDbService from '../appwrite/config'
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addPost } from '../store/postSlice';
+
+function EditPost() {
+    const navigate = useNavigate();
+    const {slug} = useParams();
+    const dispatch = useDispatch();
+    const post = useSelector((state) => state.post.posts)
+                    .find(currPost => currPost.$id === slug);
+
+    const sanitizePost = (post) => ({
+        $id: post.$id,
+        title: post.title,
+        content: post.content,
+        slug: post.slug,
+        featuredImage: post.featuredImage,
+        status: post.status,
+        userId: post.userId,
+    });
+
+    useEffect(() => {
+        console.log("current post: " , post);
+
+        if (!slug) {
+            navigate('/');
+            return;
+        }
+
+        if (!post) {
+            appWriteDbService.getPost(slug)
+                .then((existingPost) => {
+                    if (existingPost) {
+                        dispatch(addPost(sanitizePost(existingPost)));
+                    } else {
+                        navigate('/');
+                    }
+                })
+                .catch(() => navigate('/'));
+        }
+
+    }, [slug, post, dispatch, navigate]);
+    
+    return post ? (
+        <div className='py-8'>
+            <Container>
+                <PostForm post={post}/>
+            </Container>
+        </div>
+    ) : null; 
+}
+
+export default EditPost
