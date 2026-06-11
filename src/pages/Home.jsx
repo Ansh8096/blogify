@@ -4,6 +4,7 @@ import { Container, PostCard } from '../components/index';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setPosts } from '../store/postSlice';
+import { sanitizePost } from '../utils/sanitizePost';
 
 function Home() {
 
@@ -11,17 +12,6 @@ function Home() {
     const dispatch = useDispatch();
     const posts = useSelector((state) => state.post.posts)
     const authStatus = useSelector((state) => state.auth.status);
-
-
-    const sanitizePost = (post) => ({
-        $id: post.$id,
-        title: post.title,
-        content: post.content,
-        slug: post.slug,
-        featuredImage: post.featuredImage,
-        status: post.status,
-        userId: post.userId,
-    });
 
     useEffect(()=>{     
         

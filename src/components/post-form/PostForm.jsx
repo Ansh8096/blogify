@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { updatePost, addPost } from '../../store/postSlice'
 import { useDispatch } from 'react-redux'
+import { sanitizePost } from '../../utils/sanitizePost'
 
 // TODO: We will be sending the label and will be taking control from the 'RTE'...
 function PostForm({post}) {
@@ -14,16 +15,6 @@ function PostForm({post}) {
     const userData = useSelector(state => state.auth.userData);
     const dispatch = useDispatch();
 
-    const sanitizePost = (post) => ({
-        $id: post.$id,
-        title: post.title,
-        content: post.content,
-        slug: post.slug,
-        featuredImage: post.featuredImage,
-        status: post.status,
-        userId: post.userId,
-    });
-    
     // Watch() listens to form field changes...
     const {register, handleSubmit, watch, setValue, control, getValues} = useForm({
         defaultValues: {    // These defaultValues acts as an storage to hold the current details of our post...
@@ -50,8 +41,6 @@ function PostForm({post}) {
                 await appwriteFileService.deleteFile(post.featuredImage);
             }
 
-            console.log("Updtaes the post in the store...");
-
             // update the data into store...
             dispatch(
                 updatePost(sanitizePost(dbPost))
@@ -74,7 +63,6 @@ function PostForm({post}) {
                 userId: userData.$id
             });
 
-            console.log("Adds new Post into the store...");
             // add the data into store...
             dispatch(
                 addPost(sanitizePost(dbPost))

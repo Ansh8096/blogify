@@ -3,22 +3,13 @@ import { Container, PostCard } from '../components/index'
 import appwriteDbService from '../appwrite/config'
 import { useDispatch, useSelector } from 'react-redux';
 import { setPosts } from '../store/postSlice';
+import { sanitizePost } from '../utils/sanitizePost';
 
 function AllPosts() {
     
     // whenever this page is loaded, just fetch all the existing posts in the redux store...
     const posts = useSelector((state) => state.post.posts);   
     const dispatch = useDispatch();
-    
-    const sanitizePost = (post) => ({
-        $id: post.$id,
-        title: post.title,
-        content: post.content,
-        slug: post.slug,
-        featuredImage: post.featuredImage,
-        status: post.status,
-        userId: post.userId,
-    });
 
     useEffect(() => {
         if(!posts.length){

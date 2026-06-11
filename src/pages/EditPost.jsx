@@ -4,6 +4,7 @@ import appWriteDbService from '../appwrite/config'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPost } from '../store/postSlice';
+import { sanitizePost } from '../utils/sanitizePost';
 
 function EditPost() {
     const navigate = useNavigate();
@@ -12,19 +13,8 @@ function EditPost() {
     const post = useSelector((state) => state.post.posts)
                     .find(currPost => currPost.$id === slug);
 
-    const sanitizePost = (post) => ({
-        $id: post.$id,
-        title: post.title,
-        content: post.content,
-        slug: post.slug,
-        featuredImage: post.featuredImage,
-        status: post.status,
-        userId: post.userId,
-    });
-
     useEffect(() => {
-        console.log("current post: " , post);
-
+        
         if (!slug) {
             navigate('/');
             return;
