@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Conf from './conf/conf';
 import {useDispatch} from 'react-redux'
 import authService from './appwrite/auth';
 import { login, logout } from './store/authSlice';
