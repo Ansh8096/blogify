@@ -6,6 +6,8 @@ import  appwriteDbService from '../appwrite/config'
 import appwriteFileService from '../appwrite/file'
 import parse from 'html-react-parser'
 import { deletePost as deletePostFromStore, addPost } from '../store/postSlice'
+import DOMPurify from "dompurify"
+import { sanitizePost } from '../utils/sanitizePost'
 
 function Post() {
     
@@ -18,7 +20,7 @@ function Post() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userData = useSelector((state)=> state.auth.userData)
-    
+
     useEffect(()=>{
         if(!slug){
             navigate('/');
@@ -29,7 +31,9 @@ function Post() {
             appwriteDbService.getPost(slug)
             .then((existingPost) =>{
                 if(existingPost) {
-                    dispatch(addPost(existingPost))
+                    dispatch(
+                        addPost(sanitizePost(existingPost))
+                    )
                 }else navigate('/');
             })
             .catch(() => navigate('/'));
@@ -37,7 +41,7 @@ function Post() {
     }, [slug, navigate, post, dispatch])
     
     const isAuthor = (post && userData) ? post.userId === userData.$id : false;
-    
+
     const deletePost = ()=>{
         appwriteDbService.deletePost(post.$id)
         .then((status) => {
@@ -78,7 +82,9 @@ function Post() {
                     <h1 className="text-2xl font-bold">{post.title}</h1>
                 </div>
                 <div className="browser-css">
-                    {parse(post.content)}
+                    {parse(
+                        DOMPurify.sanitize(post.content)
+                    )}
                 </div>
                 
             </Container>
